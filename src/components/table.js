@@ -11,13 +11,51 @@ export function initTable(settings, onAction) {
     const {tableTemplate, rowTemplate, before, after} = settings;
     const root = cloneTemplate(tableTemplate);
 
-    // @todo: #1.2 —  вывести дополнительные шаблоны до и после таблицы
+    if (before && before.length > 0) {
+        before.reverse().forEach(templateId => {
+            root[templateId] = cloneTemplate(templateId);
+            root.container.prepend(root[templateId].container);
+        });
+    } 
 
-    // @todo: #1.3 —  обработать события и вызвать onAction()
+    if (after && after.length > 0) {
+        after.forEach(templateId => {
+            root[templateId] = cloneTemplate(templateId);
+            root.container.append(root[templateId].container);
+        });
+    }
+
+    root.container.addEventListener('change', () => {
+        onAction();
+    });
+
+    root.container.addEventListener('reset', () => {
+        setTimeout(onAction, 0);
+    });
+
+    root.container.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        onAction(e.submitter);
+    });
 
     const render = (data) => {
-        // @todo: #1.1 — преобразовать данные в массив строк на основе шаблона rowTemplate
-        const nextRows = [];
+        const nextRows = data.map(item => {
+            const row = cloneTemplate(rowTemplate);
+            Object.keys(item).forEach(key => {
+                if (key in row.elements) {
+                    const element = row.elements[key];
+                    const tagName = element.tagName;
+
+                    if (tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA') {
+                        element.value = item[key];
+                    } else {
+                        element.textContent = item[key];
+                    }
+                }
+            });
+            return row.container;
+        });
         root.elements.rows.replaceChildren(...nextRows);
     }
 

@@ -10,16 +10,16 @@ export function initSorting(columns) {
             field = action.dataset.field;
             order = action.dataset.value;
 
-            columns.forEach(column => {                                    // Перебираем элементы (в columns у нас массив кнопок)
-                if (column.dataset.field !== action.dataset.field) {    // Если это не та кнопка, что нажал пользователь
-                    column.dataset.value = 'none';                        // тогда сбрасываем её в начальное состояние
+            columns.forEach(column => {
+                if (column.dataset.field !== action.dataset.field) {
+                    column.dataset.value = 'none';
                 }
             });
         } else {
-            columns.forEach(column => {                        // Перебираем все наши кнопки сортировки
-                if (column.dataset.value !== 'none') {        // Ищем ту, что находится не в начальном состоянии (предполагаем, что одна)
-                    field = column.dataset.field;            // Сохраняем в переменных поле
-                    order = column.dataset.value;            // и направление сортировки
+            columns.forEach(column => {
+                if (column.dataset.value !== 'none') {
+                    field = column.dataset.field;
+                    order = column.dataset.value;
                 }
             });
         }
